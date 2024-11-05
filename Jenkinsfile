@@ -32,10 +32,19 @@ pipeline {
         git url: 'https://github.com/rednine9777/GitOps.git', branch: 'main'
       }
     }
+    stage('Check Files') {
+      steps {
+        container('kustomize') {
+          sh 'ls -al' // 작업 디렉토리 내 파일 확인
+        }
+      }
+    }
     stage('K8s Deploy') {
       steps {
-        withKubeConfig([credentialsId: 'kubeconfig-secret-text']) { // Secret Text ID 참조
-          sh 'kubectl apply -f *.yaml' // kubectl 명령어로 모든 yaml 파일을 배포
+        container('kustomize') {
+          withKubeConfig([credentialsId: 'kubeconfig-secret-text']) {
+            sh 'kubectl apply -f deployment.yaml' // 경로 확인 후 배포
+          }
         }
       }
     }    
