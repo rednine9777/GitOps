@@ -20,7 +20,7 @@ pipeline {
         volumes:
         - name: kube-config
           configMap:
-            name: kubeconfig-configmap # Kubernetes에서 설정된 kubeconfig를 configMap으로 마운트
+            name: kubeconfig-configmap # Kubernetes에 설정된 kubeconfig
       '''
     }
   }
@@ -33,7 +33,7 @@ pipeline {
     stage('k8s deploy') {
       steps {
         container('kubectl') {
-          sh 'kubectl apply -f deployment.yaml'
+          sh 'kubectl apply -f deployment.yaml' // 기존 deployment.yaml 파일 그대로 사용
         }
       }
     }    
