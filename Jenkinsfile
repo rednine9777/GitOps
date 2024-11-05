@@ -1,31 +1,5 @@
 pipeline {
-  agent {
-        kubernetes {
-      yaml '''
-      apiVersion: v1
-      kind: Pod
-      metadata:
-        labels:
-          app: blue-green-deploy
-        name: blue-green-deploy
-      spec:
-        containers:
-        - name: kustomize
-          image: sysnet4admin/kustomize:3.6.1
-          tty: true
-          volumeMounts:
-          - mountPath: /usr/local/bin/kubectl
-            name: kubectl
-          command:
-          - cat
-        serviceAccount: jenkins
-        volumes:
-        - name: kubectl
-          hostPath:
-            path: /usr/local/bin/kubectl
-      '''
-    }
-  }
+  agent any
   stages {
     stage('Git Pull') {
       steps {
@@ -34,10 +8,8 @@ pipeline {
     }
     stage('K8s Deploy') {
       steps {
-        container('kustomize'){
-            withKubeConfig([credentialsId: 'kubeconfig']) {
-            sh 'kubectl apply -f deployment.yaml'
-          }
+        withKubeConfig([credentialsId: 'kubeconfig-secret-text']) { // Secret Text ID 참조
+          sh 'kubectl apply -f *.yaml' // kubectl 명령어로 모든 yaml 파일을 배포
         }
       }
     }    
