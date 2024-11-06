@@ -27,15 +27,6 @@ pipeline {
     }
   }
   stages {
-    stage('Deploy Start') {
-      steps {
-        slackSend(
-          message: "배포 시작: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-          color: 'good',
-          tokenCredentialId: 'slack-key'
-        )
-      }
-    }
     stage('Git Pull') {
       steps {
         git url: 'https://github.com/rednine9777/GitOps.git', branch: 'main'
@@ -56,24 +47,6 @@ pipeline {
           }
         }
       }
-    }
-    stage('Deploy End') {
-      steps {
-        slackSend(
-          message: "배포 종료: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-          color: 'good',
-          tokenCredentialId: 'slack-key'
-        )
-      }
-    }
-  }
-  post {
-    failure {
-      slackSend(
-        message: "배포 실패: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-        color: 'danger',
-        tokenCredentialId: 'slack-key'
-      )
-    }
+    }    
   }
 }
